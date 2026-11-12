@@ -151,6 +151,11 @@ static int isotp_receive_single_frame(IsoTpLink *link, IsoTpCanMessage *message,
         return ISOTP_RET_LENGTH;
     }
 
+    if (message->as.single_frame.SF_DL > link->receive_buf_size) {
+        isotp_user_debug("Single-frame response too large for receiving buffer.");
+        return ISOTP_RET_OVERFLOW;
+    }
+
     /* copying data */
     (void) memcpy(link->receive_buffer, message->as.single_frame.data, message->as.single_frame.SF_DL);
     link->receive_size = message->as.single_frame.SF_DL;
@@ -306,6 +311,12 @@ void isotp_on_can_message(IsoTpLink *link, uint8_t *data, uint8_t len) {
 
             /* handle message */
             ret = isotp_receive_single_frame(link, &message, len);
+
+            if (ISOTP_RET_OVERFLOW == ret) {
+                link->receive_protocol_result = ISOTP_PROTOCOL_RESULT_BUFFER_OVFLW;
+                link->receive_status = ISOTP_RECEIVE_STATUS_IDLE;
+                break;
+            }
             
             if (ISOTP_RET_OK == ret) {
                 /* change status */
