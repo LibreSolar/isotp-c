@@ -245,6 +245,11 @@ int isotp_send_with_id(IsoTpLink *link, uint32_t id, const uint8_t payload[], ui
         return ISOTP_RET_ERROR;
     }
 
+    if (size > 4095) {
+        isotp_user_debug("Message size exceeds the 12-bit ISO-TP length limit.\n");
+        return ISOTP_RET_OVERFLOW;
+    }
+
     if (size > link->send_buf_size) {
         isotp_user_debug("Message size too large. Increase ISO_TP_MAX_MESSAGE_SIZE to set a larger buffer\n");
         char message[128];
