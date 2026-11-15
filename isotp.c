@@ -471,8 +471,13 @@ void isotp_poll(IsoTpLink *link) {
     /* only polling when operation in progress */
     if (ISOTP_SEND_STATUS_INPROGRESS == link->send_status) {
 
+        /* Check the old deadline before a send can refresh it. */
+        if (IsoTpTimeAfter(isotp_user_get_ms(), link->send_timer_bs)) {
+            link->send_protocol_result = ISOTP_PROTOCOL_RESULT_TIMEOUT_BS;
+            link->send_status = ISOTP_SEND_STATUS_ERROR;
+        }
         /* continue send data */
-        if (/* send data if bs_remain is invalid or bs_remain large than zero */
+        else if (/* send data if bs_remain is invalid or bs_remain large than zero */
         (ISOTP_INVALID_BS == link->send_bs_remain || link->send_bs_remain > 0) &&
         /* and if st_min is zero or go beyond interval time */
         (0 == link->send_st_min || (0 != link->send_st_min && IsoTpTimeAfter(isotp_user_get_ms(), link->send_timer_st)))) {
@@ -494,11 +499,6 @@ void isotp_poll(IsoTpLink *link) {
             }
         }
 
-        /* check timeout */
-        if (IsoTpTimeAfter(isotp_user_get_ms(), link->send_timer_bs)) {
-            link->send_protocol_result = ISOTP_PROTOCOL_RESULT_TIMEOUT_BS;
-            link->send_status = ISOTP_SEND_STATUS_ERROR;
-        }
     }
 
     /* only polling when operation in progress */
