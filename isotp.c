@@ -490,6 +490,7 @@ void isotp_poll(IsoTpLink *link) {
                     link->send_status = ISOTP_SEND_STATUS_IDLE;
                 }
             } else {
+                link->send_protocol_result = ISOTP_PROTOCOL_RESULT_ERROR;
                 link->send_status = ISOTP_SEND_STATUS_ERROR;
             }
         }
