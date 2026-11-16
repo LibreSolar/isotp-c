@@ -55,12 +55,14 @@ static void slow_transfer(uint32_t start) {
     isotp_init_link(&link, 0x123, tx, sizeof(tx), rx, sizeof(rx));
     assert(isotp_send(&link, payload, sizeof(payload)) == ISOTP_RET_OK);
     isotp_on_can_message(&link, fc, sizeof(fc));
-    now += 101;
+    now = start + 1;
+    isotp_poll(&link);
+    assert(calls == 2);
+    now = start + 102;
     isotp_poll(&link);
     assert(link.send_status == ISOTP_SEND_STATUS_INPROGRESS);
-    now = start + 128;
-    isotp_poll(&link);
-    now += 128;
+    assert(calls == 2);
+    now = start + 129;
     isotp_poll(&link);
     assert(calls == 3);
     assert(link.send_status == ISOTP_SEND_STATUS_IDLE);
