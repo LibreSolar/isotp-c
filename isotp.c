@@ -471,8 +471,8 @@ void isotp_poll(IsoTpLink *link) {
     /* only polling when operation in progress */
     if (ISOTP_SEND_STATUS_INPROGRESS == link->send_status) {
 
-        /* Check the old deadline before a send can refresh it. */
-        if (IsoTpTimeAfter(isotp_user_get_ms(), link->send_timer_bs)) {
+        /* N_Bs applies only while waiting for a flow-control frame. */
+        if (link->send_bs_remain == 0 && IsoTpTimeAfter(isotp_user_get_ms(), link->send_timer_bs)) {
             link->send_protocol_result = ISOTP_PROTOCOL_RESULT_TIMEOUT_BS;
             link->send_status = ISOTP_SEND_STATUS_ERROR;
         }
