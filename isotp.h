@@ -98,6 +98,8 @@ void isotp_on_can_message(IsoTpLink *link, uint8_t *data, uint8_t len);
  * @param size The size of the payload to be sent.
  *
  * @return Possible return values:
+ *  - @code ISOTP_RET_ERROR @endcode for a null link or payload
+ *  - @code ISOTP_RET_LENGTH @endcode for an empty payload
  *  - @code ISOTP_RET_OVERFLOW @endcode
  *  - @code ISOTP_RET_INPROGRESS @endcode
  *  - @code ISOTP_RET_OK @endcode
