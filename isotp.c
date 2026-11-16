@@ -27,7 +27,7 @@ static uint8_t isotp_st_min_to_ms(uint8_t st_min) {
     } else if (st_min <= 0x7F) {
         ms = st_min;
     } else {
-        ms = 0;
+        ms = 0x7F;
     }
 
     return ms;
